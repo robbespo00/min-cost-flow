@@ -1,4 +1,4 @@
-function [Q,R,Qn,Hn] = arnoldiqr(A,q1,m)
+function [Q,R,Qn] = arnoldiqr(d, E, q1,m)
 %ARNOLDI    Arnoldi iteration
 %   [Q,H] = ARNOLDI(A,q1,M) carries out M iterations of the
 %   Arnoldi iteration with N-by-N matrix A and starting vector q1
@@ -8,22 +8,21 @@ function [Q,R,Qn,Hn] = arnoldiqr(A,q1,m)
 %   A*Q(:,1:M) = Q(:,1:M)*H(1:M,1:M) + H(M+1,M)*Q(:,M+1)*E_M',
 %   where E_M is the M'th column of the M-by-M identity matrix.
 
-n = length(A);
+n = 2*length(d);
 q1 = q1/norm(q1);
 Qn = zeros(n,m+1); Qn(:,1) = q1;
 Hn = zeros(m+1,m);
 Q = zeros(m+1, m+1);
-R = zeros(m+1, m);
+R = zeros(m+1, m); 
 for k=1:m
-    z = A*Qn(:,k);
+    z = [ (d.*Qn(1:n/2,k)) + (E'*Qn((n/2)+1:n,k)); E*Qn(1:n/2,k)]; %we want to avoid full computation since the matrices are sparse
     for i=max(k-1,1):k %%
-        
         Hn(i,k) = Qn(:,i)'*z;
-        
         z = z - Hn(i,k)*Qn(:,i);
     end
     Hn(k+1,k) = norm(z);
-    if Hn(k+1,k) == 0 
+    if Hn(k+1,k) < 1e-10 
+        display("Breakdown happened!");
         return; 
     end %breakdown%
     Qn(:,k+1) = z/Hn(k+1,k);
