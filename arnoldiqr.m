@@ -47,7 +47,7 @@ function [Q, R, Qn] = arnoldiqr(d, E, q1, m)
             Q(k+1,k+1)=1; %build Q' segnato%
             u = Q(1:k-1, k);
             a = Q(k, k);
-            p = [u zeros(k-1, 1); a 0; 0 1]; %last two rows of Q segnato transponed %
+            p = [u zeros(k-1, 1); a 0; 0 1]; %last two rows of Q segnato transponed
             w = [v(1)^2*u v(1)*v(2)*u; v(1)^2*a v(1)*v(2)*a; v(1)*v(2) v(2)^2];
             Q(1:k+1, k:k+1) = p-(2/(v_norm))*w;
         end
