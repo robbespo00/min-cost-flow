@@ -1,6 +1,7 @@
 function [Q, R, Qn] = arnoldiqr(d, E, q1, m)
 
-    n = 2*length(d);
+    % initialization 
+    n = 2*length(d); 
     q1 = q1/norm(q1);
     Qn = zeros(n, m+1); Qn(:, 1) = q1;
     Hn = zeros(m+1, m);
@@ -44,16 +45,11 @@ function [Q, R, Qn] = arnoldiqr(d, E, q1, m)
             R(1:k, k) = [c(1:k-1); x_norm];
             
             %Building Q tilde%
-            Q(k+1,k+1)=1; %build Q' segnato%
+            Q(k+1,k+1)=1; %build Q' signed%
             u = Q(1:k-1, k);
             a = Q(k, k);
-            p = [u zeros(k-1, 1); a 0; 0 1]; %last two rows of Q segnato transponed
+            p = [u zeros(k-1, 1); a 0; 0 1]; %last two rows of Q signed transponed
             w = [v(1)^2*u v(1)*v(2)*u; v(1)^2*a v(1)*v(2)*a; v(1)*v(2) v(2)^2];
             Q(1:k+1, k:k+1) = p-(2/(v_norm))*w;
         end
     end
-    
-    
-
-
-
