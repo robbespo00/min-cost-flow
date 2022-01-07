@@ -53,7 +53,7 @@ function init_customGMRES(A, b, c, D, E)
 
     % fixed number of iterations of the lsqr without applying
     % the customized GMRES
-    iterations_lsqr = [50, 100, 200];
+    iterations_lsqr = [500, 1000, 2000];
 
     % initialization of the variables
     x_lsqr = zeros(length(b_tilde), length(iterations_lsqr)); % solutions 
