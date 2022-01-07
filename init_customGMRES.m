@@ -7,10 +7,10 @@ function init_customGMRES(A, b, c, D, E)
 
 
     % Now we start to compute the customized GMRES with different number
-    % of iterations of the Arnoldi process such that we show how the error
-    % changes with the number of iterations then at the end we compute even
-    % the solution using lsqr() function in MATLAB in order to compare the 
-    % results (looking at the time spent by each algorithm and the error).
+    % of iterations of the Arnoldi process so that we show how the error
+    % changes with the number of iterations. Then, we compute the
+    % solution using the MATLAB lsqr() function in order to compare the 
+    % results (looking at the time spent by each algorithm and at the error).
 
 
     % fixed number of iterations of the Arnoldi process in order to apply
@@ -22,8 +22,8 @@ function init_customGMRES(A, b, c, D, E)
     % of customized GMRES with different number of iterations 
     t_custom = zeros(length(num_iterations),1); % time spent by customized 
     % GMRES with different number of iterations
-    norm_custom = zeros(length(num_iterations), 1); % norm (Ax-b) where x 
-    % is the result given by customized GMRES
+    norm_custom = zeros(length(num_iterations), 1); % norm of (Ax-b) over 
+    % norm of b, where x is the result given by customized GMRES
 
     for i=1:length(num_iterations)
         tic; % start counting the time spent for one iteration
@@ -32,7 +32,7 @@ function init_customGMRES(A, b, c, D, E)
         t_custom(i) = toc; % save the time spent for the customized GMRES 
         % where the number of iterations is num_iterations(j)
         t_custom(i) = round(t_custom(i), 2); % approximate the time up to 2 
-        % numbers after the comma
+        % digits after the comma
         norm_custom(i) = norm(A*x_custom(:,i)-b_tilde)/b_norm; % compute 
         % the norm
     end 
@@ -60,8 +60,8 @@ function init_customGMRES(A, b, c, D, E)
     % of lsqr with different number of iterations
     t_lsqr = zeros(length(iterations_lsqr), 1); % time spent by lsqr with 
     % different number of iterations
-    norm_lsqr = zeros(length(iterations_lsqr),1); % norm (Ax-b) where x is
-    % x_lsqr(j) (result given by lsqr function)
+    norm_lsqr = zeros(length(iterations_lsqr),1); % norm of (Ax-b) over norm
+    % of b, where x is x_lsqr(j) (result given by lsqr function)
     
 
     for j=1:length(iterations_lsqr)
