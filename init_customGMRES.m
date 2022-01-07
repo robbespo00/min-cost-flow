@@ -1,4 +1,4 @@
-function init_customized_GMRES(A, b, c, D, E)
+function init_customGMRES(A, b, c, D, E)
 
     % given b and c we build b tilde
     b_tilde = [b; c];
