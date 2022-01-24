@@ -36,7 +36,7 @@ function [Q, R, Qn] = arnoldiqr(d, E, q1, m)
             Q(1:2, 1:2) = (eye(2)-v_norm*v.*v')';
         else 
             %Building R tilde%
-            c = Hn(k-1, k)*Q(k-1, :)' + Hn(k, k)*Q(k, :)';
+            c = Hn(k-1, k)*Q(k-1, 1:k)' + Hn(k, k)*Q(k, 1:k)';
             x = [c(k); Hn(k+1, k)];
             x_norm = norm(x);
             y = x_norm*[1; 0];   
