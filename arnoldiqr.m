@@ -11,12 +11,20 @@ function [Q, R, Qn] = arnoldiqr(d, E, q1, m)
     for k = 1:m
         z = [ (d.*Qn(1:n/2, k)) + (E'*Qn((n/2)+1:n, k)); E*Qn(1:n/2, k)]; %we want to avoid full computation since the matrices are sparse
         
-        for i = max(k-1, 1):k
-            Hn(i, k) = Qn(:, i)'*z;
-            z = z - Hn(i, k)*Qn(:, i);
+        if k==1
+            Hn(1,1)=Qn(:,1)'*z;
+            z = z - Hn(1, 1)*Qn(:, 1);
+            Hn(2,1)=norm(z);
+        end
+        else
+            Hn(k-1,k)=Hn(k,k-1);
+            z = z - Hn(k-1, k)*Qn(:, k-1);
+            Hn(k,k)= Qn(:, k)'*z;
+            z = z - Hn(k, k)*Qn(:, k);
+            Hn(k+1, k) = norm(z);    
         end
         
-        Hn(k+1, k) = norm(z);
+        
         
         if Hn(k+1, k) < 1e-10   %breakdown% 
             display("BREAKDOWN HAPPENED!");
