@@ -15,7 +15,6 @@ function [Q, R, Qn] = arnoldiqr(d, E, q1, m)
             Hn(1,1)=Qn(:,1)'*z;
             z = z - Hn(1, 1)*Qn(:, 1);
             Hn(2,1)=norm(z);
-        end
         else
             Hn(k-1,k)=Hn(k,k-1);
             z = z - Hn(k-1, k)*Qn(:, k-1);
@@ -23,11 +22,12 @@ function [Q, R, Qn] = arnoldiqr(d, E, q1, m)
             z = z - Hn(k, k)*Qn(:, k);
             Hn(k+1, k) = norm(z);    
         end
-        
+    end
+
         
         
         if Hn(k+1, k) < 1e-10   %breakdown% 
-            display("BREAKDOWN HAPPENED!");
+            disp("BREAKDOWN HAPPENED!");
             return; 
         end 
         
