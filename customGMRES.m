@@ -16,10 +16,17 @@ function x = customGMRES(d, E, b1, c1, m)
     % - Q and R are the QR decomposition of the matrix Hn;
     % - Qn is the matrix from the Arnoldi process;
     [Q, R, Qn] = arnoldiqr(d, E, b, m);
+<<<<<<< HEAD
     
     % We solve the least square problem using the the submatrices of Q
     % and R (it's cheaper)
     y = R(1:end-1,:) / Q(1, 1:end-1)'*norm(b);
+=======
+
+    % We solve the least square problem using the the submatrices of Q
+    % and R (it's cheaper)
+    y = R(1:end-1 \ Q(1, 1:end-1)*norm(b);
+>>>>>>> 5a5e341bdea9d26ca08ac223e3f2eb7cf385dd0c
     toc
 
     % We transform the solution of the smaller least square problem into
