@@ -17,11 +17,9 @@ function x = customGMRES(d, E, b1, c1, m)
     % - Qn is the matrix from the Arnoldi process;
     [Q, R, Qn] = arnoldiqr(d, E, b, m);
 
-    b_tilde = norm(b)*[1; zeros(length(Q)-1, 1)];
-
     % We solve the least square problem using the the submatrices of Q
     % and R (it's cheaper)
-    y = lsqr(R(1:end-1, :), Q(:, 1:end-1)'*b_tilde, 1e-15, 5000);
+    y = lsqr(R(1:end-1, :), Q(1, 1:end-1)*norm(b), 1e-15, 5000);
     toc
 
     % We transform the solution of the smaller least square problem into
