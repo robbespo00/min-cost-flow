@@ -1,7 +1,18 @@
-function [Q, R, Qn] = arnoldiqr(d, E, q1, m)
+function [Q, R, Qn] = arnoldiqr(diag, E, q1, m)
 
     % initialization 
-    n = 2*length(d); 
+    d = length(diag);
+    tau = size(E,1);
+    n = d + tau; 
+
+    if m <= 0
+        display("Error. m must be > 0");
+        return;
+    elseif m > n
+        m = n;
+        display("You don't need more than n iterations. m has been set to n");
+    end
+
     q1 = q1/norm(q1);
     Qn = zeros(n, m+1); Qn(:, 1) = q1;
     Hn = zeros(m+1, m);
@@ -9,7 +20,7 @@ function [Q, R, Qn] = arnoldiqr(d, E, q1, m)
     R = zeros(m+1, m); 
     
     for k = 1:m
-        z = [ (d.*Qn(1:n/2, k)) + (E'*Qn((n/2)+1:n, k)); E*Qn(1:n/2, k)]; %we want to avoid full computation since the matrices are sparse
+        z = [ (diag.*Qn(1:d, k)) + (E'*Qn(d+1:n, k)); E*Qn(1:d, k)]; %we want to avoid full computation since the matrices are sparse
         
         if k==1
             Hn(1,1)=Qn(:,1)'*z;
@@ -22,12 +33,11 @@ function [Q, R, Qn] = arnoldiqr(d, E, q1, m)
             z = z - Hn(k, k)*Qn(:, k);
             Hn(k+1, k) = norm(z);    
         end
-    end
-
+        
         
         
         if Hn(k+1, k) < 1e-10   %breakdown% 
-            disp("BREAKDOWN HAPPENED!");
+            display("BREAKDOWN HAPPENED!");
             return; 
         end 
         
