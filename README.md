@@ -6,4 +6,4 @@
 
 # **How to use it**
 
-The function `init_customGMRES(A, b, c, D, E)` is the main function that plots the solutions of the customGMRES (with different Arnoldi iterations).<br /> <br />
+The function `init_customGMRES(A, b, c, D, E)` is the main function that plots the solutions of the customGMRES (with different Arnoldi iterations) where A is the full matrix of the problem, b and c are upper and lower part of the known term vector, D is a vector corresponding to the diagonal of the matrix D and E is the incidence matrix in the compressed sparse column format of the graph.<br /> <br />
