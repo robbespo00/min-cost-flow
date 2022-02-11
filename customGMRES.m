@@ -15,7 +15,7 @@ function [x,q] = customGMRES(diag, E, b1, c1, m)
     % The function "arnoldiqr" returns Q, R and Qn where:
     % - Q and R are the QR decomposition of the matrix Hn;
     % - Qn is the matrix from the Arnoldi process;
-    tic
+    
     [Q, R, Qn] = arnoldiqr(diag, E, b, m);
     
     q=abs(Q(1,m+1));
@@ -27,5 +27,5 @@ function [x,q] = customGMRES(diag, E, b1, c1, m)
 
     % We compute the solution of the main problem
     x = Qn(:, 1:end-1)*y;
-    toc
+    
 
