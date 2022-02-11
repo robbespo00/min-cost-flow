@@ -7,7 +7,7 @@ function init_customGMRES(b, c, D, E)
     b_norm = norm(b_tilde);
 
     % minimum improvements to continue the algorithm
-    delta = 10^-8;
+    delta = 10^(-10);
 
     n = length(b_tilde);
 
