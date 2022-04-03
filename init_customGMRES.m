@@ -1,4 +1,4 @@
-function init_customGMRES(filename, mode, generate, distribution)
+function [out_res, out_num_it] = init_customGMRES(filename, mode, generate, distribution, precond, a)
     
     [E, b, c] = netgenreader(filename);
     [nodi, e] = size(E);
@@ -7,14 +7,13 @@ function init_customGMRES(filename, mode, generate, distribution)
     b=-b;
     b_tilde = [b; c];
     
+
     % compute the norm of b tilde
     b_norm = norm(b_tilde);
     n = nodi + e;
     delta = 10^(-10);
     
-    
-    
-    
+
     
     if generate
         rng(461);
@@ -51,7 +50,8 @@ function init_customGMRES(filename, mode, generate, distribution)
     end
     
     
-     
+    
+    
     switch mode
         case 'minres'
                 % Building A in sparse format
@@ -69,7 +69,7 @@ function init_customGMRES(filename, mode, generate, distribution)
 
     
     
-    num_iterations = [50:jump:round(n/32)];
+    num_iterations = [50:jump:round(n/5)];
 
     x_custom = zeros(length(b_tilde),length(num_iterations)); % solution 
     % of customized GMRES with different number of iterations 
@@ -80,8 +80,9 @@ function init_customGMRES(filename, mode, generate, distribution)
     
     for i = 1:length(num_iterations)
         disp(i);
+        disp(num_iterations(i));
         tic; % start counting the time spent for one iteration
-        [x_custom(:, i), q] = customGMRES(D, E, b, c, num_iterations(i)); 
+        [x_custom(:, i), q] = customGMRES(D, E, b, c, num_iterations(i), precond, a); 
         % apply the customized GMRES to the problem
         t_custom(i) = toc; % save the time spent for the customized GMRES 
         % where the number of iterations is num_iterations(j)
@@ -97,6 +98,7 @@ function init_customGMRES(filename, mode, generate, distribution)
         
         if strcmp(mode, 'minres')
             scatter(q,t_custom(i),70,"red", "filled");
+            hold on;
             fprintf(fileID, "q = %d\n",q);
             fprintf(fileID, "r = %d\n",residual(i));
             fprintf(fileID,"t = %d\n", t_custom(i));
@@ -115,15 +117,17 @@ function init_customGMRES(filename, mode, generate, distribution)
         
     end 
    
-    
+    out_res = zeros(1:i);
+    out_num_it = num_iterations(1:i);
     switch mode
         case 'rate'
             scatter(num_iterations(1:i-1),rate(1:i-1),'green','filled');
+            out_res = residual(1:i);
             ratefunc()
         case 'residual'
             scatter(num_iterations(1:i), residual(1:i),'blue', 'filled');
             residualfunc()
-        case 'minres'
+        case 'minres0'
             c = 1:i;
             scatter(residual(1:i), t_custom(1:i), 25, c, 'filled');
             colormap(winter);
@@ -131,6 +135,17 @@ function init_customGMRES(filename, mode, generate, distribution)
             t_minres = zeros(i,1);
             
             fprintf(fileID, "MINRES\n");
+            
+            
+            %P=[diag(D), zeros(e, nodi); E, -E*(E'./D)];
+            if precond
+                P = sparse([1:e], [1:e], D, nodi+e, nodi+e);
+                P(e+1:end,1:e) = E;
+                P(e+1:end, e+1:end) = -E*(E'./D);
+                P = P - a*eye(n);
+            
+            end
+            
             
             for j = 1:i
                 tic;
@@ -142,7 +157,6 @@ function init_customGMRES(filename, mode, generate, distribution)
             end
             
             scatter(t_minres, r_minres, 60, [0.3 0.2 0.6], 'square', 'filled');
-            set(gca, 'YScale', 'log');
             set(gca, 'XScale', 'log');
             h(1) = scatter(-1,-1,40,"blue", 'filled');
             h(2) = scatter(-1,-1,80,"blue", 'square','filled');
