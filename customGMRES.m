@@ -7,17 +7,16 @@
 %   - m is the number of iterations of the Arnoldi process;
 
 function [x,q] = customGMRES(D, E, b1, c1, m, precond, a)
-    
+
     nodes = size(E,1);
     edges = length(D);
     % we create the vector b that it's composed by b1 and c1
     b = [b1; c1];
     
     if precond
+
         b1 = D.*b1 + E'*c1;
-       
         c1 = -E*((E'*c1)./D)+ a*c1;
-        
         b = [b1; c1];
        
         [Q, R, Qn] = precondarnoldi(D, E, b, m, a);
@@ -41,21 +40,32 @@ function [x,q] = customGMRES(D, E, b1, c1, m, precond, a)
     % We compute the solution of the main problem
     x = Qn(:, 1:end-1)*y;
     
-    S = -E*(E'./D);
-    P = [diag(D) zeros(edges, nodes); E S];
-
-    A = [diag(D) E'; E zeros(nodes, nodes)];
-    B = P'*A*P;
-    save('B','B');
-    save('b1','b');
-    By = B*x;
-    
-    residual = norm(By-b)/norm(b)
-    
     
     if precond
-        x1 = D.*x(1:edges);
-        x2 = E*x(1:edges)-E*((E'*x(edges+1:end)./D)) + a*x(edges+1:end);
-        x = [x1; x2];
-    end
 
+%         S = -E*(E'./D);
+%         P = [diag(D) zeros(edges, nodes); E S];
+%     
+%         A = [diag(D) E'; E zeros(nodes, nodes)];
+%         B = P'*A*P;
+%         save('B','B');
+%         save('b1','b');
+%         By = B*x;
+%         
+%         residual = norm(By-b)/norm(b)
+        
+
+        x1 = D.*x(1:edges);
+        x2 = E*x(1:edges)-E*((E'*x(edges+1:end))./D) + a*x(edges+1:end);
+        x = [x1; x2];
+
+
+        D2 = D.^2;
+        x1 = x(1:edges);
+        x2 = x(edges+1:end);
+
+        PtAx = [D2.*x1 + E'*(E*x1) + D.*(E'*x2); -E*((E'*(E*x1))./D) + a*(E*x1)];
+
+        residual = norm(PtAx-b)/norm(b)
+        
+    end
