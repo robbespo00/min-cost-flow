@@ -1,4 +1,4 @@
-function [out_res, out_num_it] = init_customGMRES(filename, mode, generate, distribution, precond, a)
+function init_customGMRES(filename, mode, generate, distribution, precond, a)
     
     [E, b, c] = netgenreader(filename);
     [nodi, e] = size(E);
@@ -16,7 +16,7 @@ function [out_res, out_num_it] = init_customGMRES(filename, mode, generate, dist
 
     
     if generate
-        rng(461);
+        rng(46273);
         switch distribution
         case 'Gamma'
             D = random('Gamma', 5,1, e, 1);
@@ -69,7 +69,7 @@ function [out_res, out_num_it] = init_customGMRES(filename, mode, generate, dist
 
     
     
-    num_iterations = [50:jump:round(n/5)];
+    num_iterations = [50:jump:round(n/25)];
 
     x_custom = zeros(length(b_tilde),length(num_iterations)); % solution 
     % of customized GMRES with different number of iterations 
@@ -117,8 +117,6 @@ function [out_res, out_num_it] = init_customGMRES(filename, mode, generate, dist
         
     end 
    
-    out_res = zeros(1:i);
-    out_num_it = num_iterations(1:i);
     switch mode
         case 'rate'
             scatter(num_iterations(1:i-1),rate(1:i-1),'green','filled');
@@ -127,7 +125,7 @@ function [out_res, out_num_it] = init_customGMRES(filename, mode, generate, dist
         case 'residual'
             scatter(num_iterations(1:i), residual(1:i),'blue', 'filled');
             residualfunc()
-        case 'minres0'
+        case 'minres'
             c = 1:i;
             scatter(residual(1:i), t_custom(1:i), 25, c, 'filled');
             colormap(winter);
@@ -135,16 +133,6 @@ function [out_res, out_num_it] = init_customGMRES(filename, mode, generate, dist
             t_minres = zeros(i,1);
             
             fprintf(fileID, "MINRES\n");
-            
-            
-            %P=[diag(D), zeros(e, nodi); E, -E*(E'./D)];
-            if precond
-                P = sparse([1:e], [1:e], D, nodi+e, nodi+e);
-                P(e+1:end,1:e) = E;
-                P(e+1:end, e+1:end) = -E*(E'./D);
-                P = P - a*eye(n);
-            
-            end
             
             
             for j = 1:i
@@ -158,9 +146,9 @@ function [out_res, out_num_it] = init_customGMRES(filename, mode, generate, dist
             
             scatter(t_minres, r_minres, 60, [0.3 0.2 0.6], 'square', 'filled');
             set(gca, 'XScale', 'log');
-            h(1) = scatter(-1,-1,40,"blue", 'filled');
-            h(2) = scatter(-1,-1,80,"blue", 'square','filled');
-            legend(h, ["CustomGMRES","MINRES"]);
+%             h(1) = scatter(-1,-1,40,"blue", 'filled');
+%             h(2) = scatter(-1,-1,80,"blue", 'square','filled');
+%             legend(h, ["CustomGMRES","MINRES"]);
     end
 
  
@@ -168,5 +156,3 @@ function [out_res, out_num_it] = init_customGMRES(filename, mode, generate, dist
 %     t = t_custom(i-1);
 %     scatter(e+nodi, t_custom(i-1), 25, 'green', 'filled');
 %     scatter(e, residual(1:i), 25, c, 'filled');
-
-    
