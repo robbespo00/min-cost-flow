@@ -13,6 +13,7 @@ function [Q, R, Qn] = precondarnoldi(D, E, q1, m, a) % initialization
         m = n;
         display("You don't need more than n iterations. m has been set to n");
     end
+    
     q1 = q1/norm(q1);
     Qn = zeros(n, m+1); 
     Qn(:, 1) = q1;
@@ -21,24 +22,19 @@ function [Q, R, Qn] = precondarnoldi(D, E, q1, m, a) % initialization
     Q = zeros(m+1, m+1);
     R = zeros(m+1, m);
     
-    
-    
-    D3 = D.^3;
-   
-    
+    D3 = D.^3;    
     
     for k = 1:m
         qk1 = Qn(1:d, k);
         qk2 = Qn(d+1:n, k);
         
-        z1 = (D3.*qk1) + E'*(E*(D.*qk1)) + D.*E'*(E*qk1) -D.*(E'*(E*((E'*qk2)./D)));
-        z2 = -E*((E'*((E*(D.*qk1))))./D);
+        z1 = (D3.*qk1) + E'*(E*(D.*qk1)) + D.*(E'*(E*qk1)) -D.*(E'*(E*((E'*qk2)./D)));
+        z2 = -E*((E'*(E*(D.*qk1)))./D);
         z=[z1;z2];
         
         %z = [(D3.*qk1) + E'*(E*(D.*qk1)) + D.*E'*(E*qk1) -D.*(E'*(E*((E'*qk2)./D)));-E*((E'*((E*(D.*qk1))))./D) ];
 
-        
-        z=[z(1:d)+ a*D.*(E'*qk2); z(d+1:end)+ a*E*(D.*qk1)];
+        z = [z(1:d) + a*(D.*(E'*qk2)); z(d+1:end)+ a*(E*(D.*qk1))];
         
         if k==1
             Hn1(1) = Qn(:,1)'*z;
@@ -76,10 +72,9 @@ function [Q, R, Qn] = precondarnoldi(D, E, q1, m, a) % initialization
             %Building Q tilde%
             Q(k+1,k+1)=1; %build Q' signed%
             u = Q(1:k-1, k);
-            a = Q(k, k);
-            p = [u zeros(k-1, 1); a 0; 0 1]; %last two rows of Q signed transponed
-            gamma = [v(1)^2*u v(1)*v(2)*u; v(1)^2*a v(1)*v(2)*a; v(1)*v(2) v(2)^2];
+            a2 = Q(k, k);
+            p = [u zeros(k-1, 1); a2 0; 0 1]; %last two rows of Q signed transponed
+            gamma = [v(1)^2*u v(1)*v(2)*u; v(1)^2*a2 v(1)*v(2)*a2; v(1)*v(2) v(2)^2];
             Q(1:k+1, k:k+1) = p-(2/(v_norm))*gamma;
         end
     end
-
