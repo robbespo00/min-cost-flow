@@ -1,4 +1,3 @@
-
 function [Q, R, Qn] = precondarnoldi(D, E, q1, m, a) % initialization
     
     d = length(D);

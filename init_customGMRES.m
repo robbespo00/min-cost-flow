@@ -60,7 +60,7 @@ function init_customGMRES(filename, mode, generate, distribution, precond, a)
             A(1:e, e+1:end) = E';
             % Create the file where the results will be saved
             fileID = fopen(strcat(erase(filename, ".txt"),"_result.txt"), 'w');
-            jump = sqrt(n);
+            jump = round(sqrt(n)/5);
         case 'rate'
             jump=1;
         case 'residual'
@@ -78,38 +78,58 @@ function init_customGMRES(filename, mode, generate, distribution, precond, a)
     residual = zeros(length(num_iterations), 1); 
     rate = zeros(length(num_iterations)-1, 1);
     
+    residual_nop = zeros(length(num_iterations),1);
+    residual_p = zeros(length(num_iterations),1);
+    flag=true;
+    t_nop = zeros(length(num_iterations),1);
+    t_p2 = zeros(length(num_iterations),1);
+    t_px = zeros(length(num_iterations),1);
+    
     for i = 1:length(num_iterations)
         disp(i);
         disp(num_iterations(i));
         tic; % start counting the time spent for one iteration
-        [x_custom(:, i), q] = customGMRES(D, E, b, c, num_iterations(i), precond, a); 
+        [x_custom(:, i), q_nop,q_p, residual_nop(i),residual_p(i), t_nop(i), t_p2(i), t_px(i)] = customGMRES(D, E, b, c, num_iterations(i), precond, a); 
         % apply the customized GMRES to the problem
         t_custom(i) = toc; % save the time spent for the customized GMRES 
         % where the number of iterations is num_iterations(j)
         %t_custom(i) = round(t_custom(i), 2); % approximate the time up to 2 
         % digits after the comma
+        tic;
         Ax = [D.*x_custom(1:length(D),i) + E'*x_custom(length(D)+1:end,i); E*x_custom(1:length(D),i)];
         residual(i) = norm(Ax-b_tilde)/b_norm; % compute 
         % the residual
+        boh = toc;
+        t_px(i)= t_px(i)+boh;
         
         if strcmp(mode, 'rate') && i > 1
             rate(i-1)=residual(i)/residual(i-1);
         end
         
-        if strcmp(mode, 'minres')
-            scatter(q,t_custom(i),70,"red", "filled");
-            hold on;
-            fprintf(fileID, "q = %d\n",q);
+        if strcmp(mode, 'minres') 
+            if flag
+                scatter(q_nop,t_nop(i),80,"red", "filled");
+                hold on;
+            end
+            
+            scatter(q_p,t_p2(i), 80,"magenta","filled");
+            %fprintf(fileID, "q = %d\n",q);
             fprintf(fileID, "r = %d\n",residual(i));
             fprintf(fileID,"t = %d\n", t_custom(i));
             fprintf(fileID,"m = %d\n", num_iterations(i));
         end
  
         if i > 1
-            del = abs(residual(i)-residual(i-1));
-            if del < delta
-                display("CustomGMRES stopped since the delta was close to 0");
-                break;
+            del_p = abs(residual_p(i)-residual_p(i-1));
+            if del_p < delta 
+                display("CustomGMRES stopped since the delta was close to 0 (precond)");
+                
+            end
+            del_nop = abs(residual_nop(i)-residual_nop(i-1));
+            if del_nop < delta && flag
+                display("CustomGMRES stopped since the delta was close to 0 (nop)");
+                flag = false;
+                position = i;
             end
         end
 
@@ -118,6 +138,17 @@ function init_customGMRES(filename, mode, generate, distribution, precond, a)
     end 
    
     switch mode
+        case 'minres'
+            if flag
+                position = i;
+            end
+            scatter(residual_nop(1:position), t_nop(1:position), 35, 'blu','square', 'filled');
+            
+            hold on;
+            
+            scatter(residual_p(1:i), t_p2(1:i), 35, 'green', 'filled');
+            scatter(residual(1:i),t_px(1:i), 45, [0.4940 0.1840 0.5560]	,'filled');
+            
         case 'rate'
             scatter(num_iterations(1:i-1),rate(1:i-1),'green','filled');
             out_res = residual(1:i);
@@ -125,7 +156,7 @@ function init_customGMRES(filename, mode, generate, distribution, precond, a)
         case 'residual'
             scatter(num_iterations(1:i), residual(1:i),'blue', 'filled');
             residualfunc()
-        case 'minres'
+        case 'minres0'
             c = 1:i;
             scatter(residual(1:i), t_custom(1:i), 25, c, 'filled');
             colormap(winter);
