@@ -1,8 +1,6 @@
-function residualfunc()
+function residualfunc(x, y)
 
-    h = findobj(gca, 'Type', 'scatter');
-    x = h.XData;
-    y = h.YData;
+    
     y = log10(y);
     scatter(x,y,'blue','filled');
     hold on
