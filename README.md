@@ -4,6 +4,9 @@
   <img height=500px width=550px src="https://user-images.githubusercontent.com/73891662/148542540-b0cb8277-d883-46a2-8de1-3058101c0372.PNG">
 </p>
 
-# **How to use it**
+# **Getting Started**
+The following repository contains the non ML project 27 of the CM course.<br />
 
-The function `init_customGMRES(A, b, c, D, E)` is the main function that plots the solutions of the customGMRES (with different Arnoldi iterations) where A is the full matrix of the problem, b and c are upper and lower part of the known term vector, D is a vector corresponding to the diagonal of the matrix D and E is the incidence matrix in the compressed sparse column format of the graph.<br /> <br />
+# Prerequisites
+Given N the number of nodes and E the number of edges of the graph, the instances we use come from a `.txt` file and have the following structure: the first N rows are formatted like `'n' node supply`, while the rows from the (N+1)-th to the last (E+N) have this format: `'a' source_node destinatation_node cost`.<br />
+
