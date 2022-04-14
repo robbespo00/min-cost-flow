@@ -1,6 +1,5 @@
 function ratefunc(x, y)
 
-
     scatter(x,y,'green','filled');
 
     hold on
@@ -10,3 +9,4 @@ function ratefunc(x, y)
     xlabel('Number of iterations');
     ylabel('Convergence rate');
     ylim([0.75, 1.02]);
+end
