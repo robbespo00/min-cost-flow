@@ -76,7 +76,6 @@ function main(filename, mode, generate, distribution)
         case 'Ill'
              D=rand(e,1);
              perm = randperm(e, round(e*0.4));
-             perm = randperm(e, round(e*0.4));
              D(perm)= D(perm)*10^-5;
              save('D_ill', 'D');
         end
