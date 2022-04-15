@@ -79,10 +79,10 @@ function [Q, R, Qn] = arnoldiqr(D, E, q1, m, a, precond) % initialization
             R(1:k, k) = [c(1:k-1); x_norm];
 
             %Building Q tilde%
-            Q(k+1,k+1)=1; %build \Bar{Q'}
+            Q(k+1,k+1)=1; %build \underline{Q}^T
             u = Q(1:k-1, k);
             a2 = Q(k, k);
-            p = [u zeros(k-1, 1); a2 0; 0 1]; %last two rows of Q signed transponed
+            p = [u zeros(k-1, 1); a2 0; 0 1]; %last two rows of \underline{Q}^T
             gamma = [v(1)^2*u v(1)*v(2)*u; v(1)^2*a2 v(1)*v(2)*a2; v(1)*v(2) v(2)^2];
             Q(1:k+1, k:k+1) = p-(2/(v_norm))*gamma;
         end
