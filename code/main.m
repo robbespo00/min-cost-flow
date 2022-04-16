@@ -170,6 +170,10 @@ function main(filename, mode, generate, distribution)
             break;
         end
     end 
+    
+    if flag_nop
+        position_nop = i;
+    end
    
     switch mode %plots
         case 'precond'
